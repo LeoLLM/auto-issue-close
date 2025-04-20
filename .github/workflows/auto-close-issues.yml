@@ -1,0 +1,19 @@
+name: Auto Close Issues
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  auto-close:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'completed') || contains(github.event.issue.labels.*.name, 'wontfix')
+    steps:
+      - name: Close Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: |
+            This issue has been automatically closed because it was labeled as '${{ contains(github.event.issue.labels.*.name, 'completed') && 'completed' || 'wontfix' }}'.
+          token: ${{ secrets.GITHUB_TOKEN }}
